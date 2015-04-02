@@ -191,7 +191,7 @@
  *    limitations under the License.
  *
  */
-package com.claro.integrations.configurations;
+package org.jconfigurations;
 
 import org.jconfigurations.Configuration;
 import org.jconfigurations.ConfigurationException;
