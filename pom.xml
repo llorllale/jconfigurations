@@ -2,14 +2,23 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.llorllale</groupId>
+  <groupId>org.llorllale</groupId>
   <artifactId>jconfigurations</artifactId>
-  <version>0.1.0</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
 
-  <name>JConfigurations</name>
+  <name>${project.groupId}:${project.artifactId}</name>
   <description>Heavily inspired by jcommander (https://github.com/cbeust/jcommander), but more API-oriented instead of command-line-oriented.</description>
   <url>https://github.com/llorllale/jconfigurations</url>
+
+  <developers>
+    <developer>
+      <id>llorllale</id>
+      <name>George Aristy</name>
+      <email>george.aristy@gmail.com</email>
+      <url>http://www.georgearisty.com</url>
+    </developer>
+  </developers>
 
   <licenses>
     <license>
@@ -20,7 +29,9 @@
   </licenses>
 
   <scm>
-    <url>https://github.com/llorllale/jconfigurations</url>
+    <connection>scm:git:git@github.com:llorllale/jconfigurations.git</connection>
+    <developerConnection>scm:git:git@github.com:llorllale/jconfigurations.git</developerConnection>
+    <url>git@github.com:llorllale/jconfigurations.git</url>
   </scm>
 
   <distributionManagement>
@@ -48,7 +59,6 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <netbeans.hint.license>LICENSE</netbeans.hint.license>
-    <gpg.executable>gpg2</gpg.executable>
   </properties>
 
   <build>
@@ -96,7 +106,7 @@
       <plugin>
         <groupId>org.sonatype.plugins</groupId>
         <artifactId>nexus-staging-maven-plugin</artifactId>
-        <version>1.6.3</version>
+        <version>1.6.5</version>
         <extensions>true</extensions>
         <configuration>
           <serverId>ossrh</serverId>
@@ -106,5 +116,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>
