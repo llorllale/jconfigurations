@@ -67,6 +67,11 @@ public @interface Configuration {
   public Class<? extends ConfigurationConverter<?>> converter() default NoConfigurationConverter.class;
 
   /**
+   * Specifies whether this {@link Configuration configuration} is a <em>flag</em>.<br><br>
+   * A 'flag' is a parameter whose presence, and <em>only</em> its presence, is required in order to determine its 'value'.<br><br>
+   * It is illegal to set {@code flag} to {@code true} on a type other than {@code boolean}.<br><br>
+   * The {@link Configuration configuration}'s presence or absence is used to set its value to {@code true} or {@code false}
+   * respectively, regardless of the explicit value specified, effectively overriding any default value.<br><br>
    * 
    * @return 
    */
