@@ -4,7 +4,7 @@
 
   <groupId>org.llorllale</groupId>
   <artifactId>jconfigurations</artifactId>
-  <version>0.1.1</version>
+  <version>0.2.0</version>
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
@@ -58,7 +58,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
-    <netbeans.hint.license>LICENSE</netbeans.hint.license>
+    <netbeans.hint.license>apache20</netbeans.hint.license>
   </properties>
 
   <build>
