@@ -187,7 +187,8 @@ public class ConfiguratorTest {
     private File file;
     @Configuration(name = "bool", required = true, converter = BooleanConfigurationConverter.class)
     private boolean bool;
-    @Configuration(flag = true)
+    @Configuration
+    @FlagConfiguration
     private boolean doThat;
 
   }
@@ -197,7 +198,8 @@ public class ConfiguratorTest {
     private String string;
     @Configuration(name = "person.age")
     private int integer;
-    @Configuration(name = "doThis", flag = true)
+    @Configuration(name = "doThis")
+    @FlagConfiguration
     private boolean doThat;
 
   }
@@ -207,8 +209,8 @@ public class ConfiguratorTest {
     private String string;
     @Configuration(name = "person.age")
     private int integer;
-    @Configuration(name = "doThis", required = true, flag = true)
+    @Configuration(name = "doThis", required = true)
+    @FlagConfiguration
     private boolean doThat;
-
   }
 }

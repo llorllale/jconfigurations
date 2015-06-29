@@ -113,7 +113,7 @@ public class JConfigurator {
     ConfigurationConverter converter = getConfigurationConverter(field);
     final String propertyName = getConfigurationName(field);
     final String propertyValue = properties.get(propertyName);
-    boolean isFlag = configuration.flag();
+    boolean isFlag = field.isAnnotationPresent(FlagConfiguration.class);
 
     try{
       if(isFlag){
@@ -171,16 +171,11 @@ public class JConfigurator {
       throw new ConfigurationException("No CollectionConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
     }
 
-    //Check Configuration.flag() compatibility
-    final boolean isFlag;
-    if(field.isAnnotationPresent(Configuration.class)){
-      isFlag = field.getAnnotation(Configuration.class).flag();
-    }else{
-      isFlag = false;
-    }
+    //Check @FlagConfiguration compatibility
+    final boolean isFlag = field.isAnnotationPresent(FlagConfiguration.class);
 
     if(isFlag && (!Boolean.class.isAssignableFrom(field.getType()) && !boolean.class.isAssignableFrom(field.getType()))){
-        throw new ConfigurationException("Cannot set @Configuration.flag = 'true' on non-boolean field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+        throw new ConfigurationException("Cannot use @FlagConfiguration on non-boolean field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
     }
   }
 
