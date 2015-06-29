@@ -17,9 +17,10 @@ package org.jconfigurations;
 
 import org.jconfigurations.converters.ConfigurationConverter;
 import org.jconfigurations.converters.NoConfigurationConverter;
-import java.lang.annotation.ElementType;
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.FIELD;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
 
 /**
@@ -27,8 +28,8 @@ import java.lang.annotation.Target;
  * @author George Aristy
  * @see JConfigurator#configure(java.util.Map, java.lang.Object) 
  */
-@Retention(value = RetentionPolicy.RUNTIME)
-@Target(value = {ElementType.FIELD})
+@Retention(RUNTIME)
+@Target({FIELD, ANNOTATION_TYPE})
 public @interface Configuration {
   /**
    * The {@link Configuration configuration's} name as expected in the configuration source.<br>
@@ -64,7 +65,7 @@ public @interface Configuration {
    * @return 
    * @see JConfigurator#configure(java.util.Map, java.lang.Object) 
    */
-  public Class<? extends ConfigurationConverter<?>> converter() default NoConfigurationConverter.class;
+  public Class<? extends ConfigurationConverter> converter() default NoConfigurationConverter.class;
 
   /**
    * Specifies whether this {@link Configuration configuration} is a <em>flag</em>.<br><br>

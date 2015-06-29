@@ -21,17 +21,13 @@ import org.jconfigurations.ConfigurationException;
  *
  * @author George Aristy
  */
-public class FloatConfigurationConverter extends BaseConfigurationConverter<Float> {
-  public FloatConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class FloatConfigurationConverter implements ConfigurationConverter<Float> {
   @Override
   public Float convert(String value) throws ConfigurationException {
     try{
       return Float.parseFloat(value);
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, Float.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

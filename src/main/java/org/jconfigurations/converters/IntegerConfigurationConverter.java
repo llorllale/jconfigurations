@@ -21,17 +21,13 @@ import org.jconfigurations.ConfigurationException;
  *
  * @author George Aristy
  */
-public class IntegerConfigurationConverter extends BaseConfigurationConverter<Integer> {
-  public IntegerConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class IntegerConfigurationConverter implements ConfigurationConverter<Integer> {
   @Override
   public Integer convert(String value) throws ConfigurationException {
     try{
       return Integer.parseInt(value);
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, Integer.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

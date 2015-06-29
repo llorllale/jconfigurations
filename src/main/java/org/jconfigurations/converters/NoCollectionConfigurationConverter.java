@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2015 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +15,16 @@
  */
 package org.jconfigurations.converters;
 
+import java.util.Collection;
 import org.jconfigurations.ConfigurationException;
 
 /**
  *
  * @author George Aristy
  */
-public class DoubleConfigurationConverter implements ConfigurationConverter<Double> {
+public class NoCollectionConfigurationConverter implements CollectionConfigurationConverter<Void> {
   @Override
-  public Double convert(String value) throws ConfigurationException {
-    try{
-      return Double.parseDouble(value);
-    }catch(Exception e){
-      throw new ConfigurationException(e.getMessage(), e);
-    }
+  public Collection<Void> convert(String value) throws ConfigurationException {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 }

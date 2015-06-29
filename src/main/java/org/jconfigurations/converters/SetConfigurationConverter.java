@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2015 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +15,19 @@
  */
 package org.jconfigurations.converters;
 
-import org.jconfigurations.ConfigurationException;
+import java.util.HashSet;
 
 /**
  *
  * @author George Aristy
+ * @param <T>
  */
-public class DoubleConfigurationConverter implements ConfigurationConverter<Double> {
-  @Override
-  public Double convert(String value) throws ConfigurationException {
-    try{
-      return Double.parseDouble(value);
-    }catch(Exception e){
-      throw new ConfigurationException(e.getMessage(), e);
-    }
+public class SetConfigurationConverter<T> extends AbstractCollectionConfigurationConverter<T> {
+  public SetConfigurationConverter(ConfigurationConverter<T> converter){
+    super(converter, HashSet.class);
+  }
+
+  public SetConfigurationConverter(ConfigurationConverter<T> converter, String separator) {
+    super(converter, HashSet.class, separator);
   }
 }

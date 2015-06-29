@@ -22,17 +22,13 @@ import java.math.BigDecimal;
  *
  * @author George Aristy
  */
-public class BigDecimalConfigurationConverter extends BaseConfigurationConverter<BigDecimal> {
-  public BigDecimalConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class BigDecimalConfigurationConverter implements ConfigurationConverter<BigDecimal> {
   @Override
   public BigDecimal convert(String value) throws ConfigurationException {
     try{
       return BigDecimal.valueOf(Long.parseLong(value));
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, BigDecimal.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

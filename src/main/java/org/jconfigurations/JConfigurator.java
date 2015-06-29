@@ -24,22 +24,30 @@ import org.jconfigurations.converters.FileConfigurationConverter;
 import org.jconfigurations.converters.FloatConfigurationConverter;
 import org.jconfigurations.converters.IntegerConfigurationConverter;
 import org.jconfigurations.converters.LongConfigurationConverter;
-import org.jconfigurations.converters.NoConfigurationConverter;
 import org.jconfigurations.converters.StringConfigurationConverter;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import org.jconfigurations.converters.CollectionConfigurationConverter;
+import org.jconfigurations.converters.ListConfigurationConverter;
+import org.jconfigurations.converters.NoCollectionConfigurationConverter;
+import org.jconfigurations.converters.NoConfigurationConverter;
+import org.jconfigurations.converters.SetConfigurationConverter;
 
 /**
  * Main class.
  * @author George Aristy
  */
 public class JConfigurator {
-  private static final Map<Class<?>, Class<? extends ConfigurationConverter<?>>> defaultConverters = new HashMap<Class<?>, Class<? extends ConfigurationConverter<?>>>();
+  private static final Map<Class<?>, Class<? extends ConfigurationConverter>> defaultConverters = new HashMap<Class<?>, Class<? extends ConfigurationConverter>>();
+  private static final Map<Class<?>, Class<? extends CollectionConfigurationConverter>> defaultCollectionConverters = new HashMap<Class<?>, Class<? extends CollectionConfigurationConverter>>();
 
   static {
     defaultConverters.put(Float.class, FloatConfigurationConverter.class);
@@ -56,6 +64,11 @@ public class JConfigurator {
     defaultConverters.put(File.class, FileConfigurationConverter.class);
     defaultConverters.put(Boolean.class, BooleanConfigurationConverter.class);
     defaultConverters.put(boolean.class, BooleanConfigurationConverter.class);
+  }
+
+  static {
+    defaultCollectionConverters.put(List.class, ListConfigurationConverter.class);
+    defaultCollectionConverters.put(Set.class, SetConfigurationConverter.class);
   }
 
   /**
@@ -81,71 +94,161 @@ public class JConfigurator {
    * @throws ConfigurationException 
    */
   public void configure(Map<String, String> properties, Object object) throws ConfigurationException {
-    try{
-      for(Field field : object.getClass().getDeclaredFields()){
-        if(field.isAnnotationPresent(Configuration.class)){
-          Configuration configuration = field.getAnnotation(Configuration.class);
-          final String propertyName = configuration.name().isEmpty() ? field.getName() : configuration.name();
-          final String propertyValue = properties.get(propertyName);
-          final Class<?> propertyType = field.getType();
-          boolean isFlag = configuration.flag();
-  
-          if(propertyValue == null && configuration.required()){
-            throw new ConfigurationException("Missing configuration value for required configuration property: " + propertyName + " in class: " + object.getClass().getName());
-          }
+    for(Field field : object.getClass().getDeclaredFields()){
+      if(field.isAnnotationPresent(Configuration.class) || field.isAnnotationPresent(CollectionConfiguration.class)){
+        validate(properties, field);
+        field.setAccessible(true);
 
-          field.setAccessible(true);
-
-          if(isFlag){
-            if(propertyType == Boolean.class || propertyType == boolean.class){
-              field.set(object, properties.containsKey(propertyName));
-            }else{
-              throw new ConfigurationException("Cannot set Configuration.flag = 'true' on non-boolean field " + field.getName() + " in class " + object.getClass());
-            }
-          }else{
-            Object coercedPropertyValue = null;
-          
-            if(propertyValue != null){
-              coercedPropertyValue = convert(propertyName, propertyValue, field.getType(), configuration.converter());
-              field.set(object, coercedPropertyValue);
-            }
-          }
+        if(field.isAnnotationPresent(CollectionConfiguration.class)){
+          configureCollectionField(properties, field, object);
+        }else if(field.isAnnotationPresent(Configuration.class)){
+          configureField(properties, field, object);
         }
       }
-    }catch(ConfigurationException ce){
-      throw ce;
+    }
+  }
+
+  private void configureField(Map<String, String> properties, Field field, Object object) throws ConfigurationException {
+    Configuration configuration = field.getAnnotation(Configuration.class);
+    ConfigurationConverter converter = getConfigurationConverter(field);
+    final String propertyName = getConfigurationName(field);
+    final String propertyValue = properties.get(propertyName);
+    boolean isFlag = configuration.flag();
+
+    try{
+      if(isFlag){
+        field.set(object, properties.containsKey(propertyName));
+      }else if(propertyValue != null){
+        field.set(object, converter.convert(propertyValue));
+      }
     }catch(Exception e){
       throw new ConfigurationException(e.getMessage(), e);
     }
   }
 
-  private Object convert(String propertyName, String propertyValue, Class<?> propertyValueType, Class<? extends ConfigurationConverter<?>> converterClass) throws ConfigurationException {
-    Object result = null;
+  private void configureCollectionField(Map<String, String> properties, Field field, Object object) throws ConfigurationException {
+    CollectionConfigurationConverter converter = getCollectionConfigurationConverter(field);
 
     try{
-      if(NoConfigurationConverter.class.isAssignableFrom(converterClass)){
-        if(defaultConverters.containsKey(propertyValueType)){
-          result = defaultConverters.get(propertyValueType).getConstructor(String.class).newInstance(propertyName).convert(propertyValue);
-        }else{
-          throw new ConfigurationException("No ConfigurationConverter found for configuration name: " + propertyName + " type: " + propertyValueType.getName());
-        }
-      }else{
-        ConfigurationConverter<?> converter;
-        
-        if(defaultConverters.containsValue(converterClass)){
-          converter = converterClass.getConstructor(String.class).newInstance(propertyName);
-        }else{
-          converter = converterClass.newInstance();
-        }
-
-        result = converter.convert(propertyValue);
-      }
-    }catch(ConfigurationException ce){
-      throw ce;
+      field.set(object, converter.convert(properties.get(getConfigurationName(field))));
     }catch(Exception e){
       throw new ConfigurationException(e.getMessage(), e);
     }
+  }
 
-    return result;
+  private void validate(Map<String, String> properties, Field field) throws ConfigurationException {
+    if(!field.isAnnotationPresent(Configuration.class) && !field.isAnnotationPresent(CollectionConfiguration.class)){
+      throw new ConfigurationException("Field '" + field.getName() + "' of class '" + field.getDeclaringClass().getName() + "' has no valid annotations.");
+    }
+
+    if(field.isAnnotationPresent(CollectionConfiguration.class) && !Collection.class.isAssignableFrom(field.getType())){
+      throw new ConfigurationException("Cannot annotate a field that is not a subtype of java.util.Collection with @CollectionConfiguration.");
+    }
+
+    //Configuration value must be specified if field is marked as required
+    final boolean isRequired;
+    if(field.isAnnotationPresent(Configuration.class)){
+      isRequired = field.getAnnotation(Configuration.class).required();
+    }else{
+      isRequired = false;
+    }
+
+    final String configurationName = getConfigurationName(field);
+
+    if(isRequired){
+      if(!properties.containsKey(configurationName) || properties.get(configurationName) == null || properties.get(configurationName).isEmpty()){
+        throw new ConfigurationException("Missing configuration value for required configuration field '" + configurationName + "' in class '" + field.getDeclaringClass().getName() + "'.");
+      }
+    }
+
+    //Check if ConfigurationConverter is defined
+    if(null == getConfigurationConverterClass(field)){
+      throw new ConfigurationException("No ConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+    }
+
+    //Check if CollectionConfigurationConverter is defined
+    if(field.isAnnotationPresent(CollectionConfiguration.class) && null == getCollectionConfigurationConverterClass(field)){
+      throw new ConfigurationException("No CollectionConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+    }
+
+    //Check Configuration.flag() compatibility
+    final boolean isFlag;
+    if(field.isAnnotationPresent(Configuration.class)){
+      isFlag = field.getAnnotation(Configuration.class).flag();
+    }else{
+      isFlag = false;
+    }
+
+    if(isFlag && (!Boolean.class.isAssignableFrom(field.getType()) && !boolean.class.isAssignableFrom(field.getType()))){
+        throw new ConfigurationException("Cannot set @Configuration.flag = 'true' on non-boolean field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+    }
+  }
+
+  private ConfigurationConverter getConfigurationConverter(Field field) throws ConfigurationException {
+    Class<? extends ConfigurationConverter> converterClass = getConfigurationConverterClass(field);
+    ConfigurationConverter converter = null;
+
+      try{
+        if(defaultConverters.containsValue(converterClass)){
+          converter = converterClass.newInstance();
+        }
+      }catch(Exception e){
+        throw new ConfigurationException("Unable to instantiate converter '" + converterClass.getName() + "' declared for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.", e);
+      }
+    
+    return converter;
+  }
+
+  private CollectionConfigurationConverter getCollectionConfigurationConverter(Field field) throws ConfigurationException {
+    CollectionConfigurationConverter collectionConverter = null;  //return variable
+    final String delimiter = field.getAnnotation(CollectionConfiguration.class).delimiter();
+    ConfigurationConverter configurationConverter = getConfigurationConverter(field);
+    Class<? extends CollectionConfigurationConverter> collectionConverterClass = getCollectionConfigurationConverterClass(field);
+
+      try{
+        if(defaultCollectionConverters.containsValue(collectionConverterClass)){
+          if(!delimiter.isEmpty()){
+            collectionConverter = collectionConverterClass.getConstructor(ConfigurationConverter.class, String.class).newInstance(configurationConverter, delimiter);
+          }else{
+            collectionConverter = collectionConverterClass.getConstructor(ConfigurationConverter.class).newInstance(configurationConverter);
+          }
+        }
+      }catch(Exception e){
+        throw new ConfigurationException("Unable to instantiate converter '" + collectionConverterClass.getName() + "' declared for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.", e);
+      }
+    
+    return collectionConverter;  
+  }
+
+  private Class<? extends CollectionConfigurationConverter> getCollectionConfigurationConverterClass(Field field) throws ConfigurationException {
+    CollectionConfiguration config = field.getAnnotation(CollectionConfiguration.class);
+    Class<? extends CollectionConfigurationConverter> converterClass = config.collectionConverter() != NoCollectionConfigurationConverter.class ? config.collectionConverter() : defaultCollectionConverters.get(field.getType());
+    return converterClass;
+  }
+
+  private String getConfigurationName(Field field){
+    String name = null;
+
+    if(field.isAnnotationPresent(Configuration.class)){
+      Configuration config = field.getAnnotation(Configuration.class);
+      name = !"".equals(config.name()) ? config.name() : field.getName();
+    }else{
+      name = field.getName();
+    }
+
+    return name;
+  }
+
+  private Class<? extends ConfigurationConverter> getConfigurationConverterClass(Field field) throws ConfigurationException {
+    Class<? extends ConfigurationConverter> converterClass = null; //return variable
+
+    if(field.isAnnotationPresent(Configuration.class)){
+      Configuration configuration = field.getAnnotation(Configuration.class);
+      converterClass = configuration.converter() == NoConfigurationConverter.class ? defaultConverters.get(field.getType()) : configuration.converter();
+    }else if(field.isAnnotationPresent(CollectionConfiguration.class)){
+      converterClass = defaultConverters.get(String.class);
+    }
+
+    return converterClass;
   }
 }

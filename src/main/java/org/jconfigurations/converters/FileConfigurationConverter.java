@@ -22,17 +22,13 @@ import java.io.File;
  *
  * @author George Aristy
  */
-public class FileConfigurationConverter extends BaseConfigurationConverter<File> {
-  public FileConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class FileConfigurationConverter implements ConfigurationConverter<File> {
   @Override
   public File convert(String value) throws ConfigurationException {
     try{
       return new File(value);
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, Float.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2015 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,21 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jconfigurations.converters;
+package org.jconfigurations;
 
-import org.jconfigurations.ConfigurationException;
+import static java.lang.annotation.ElementType.FIELD;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
+import org.jconfigurations.converters.CollectionConfigurationConverter;
+import org.jconfigurations.converters.NoCollectionConfigurationConverter;
 
 /**
  *
  * @author George Aristy
  */
-public class DoubleConfigurationConverter implements ConfigurationConverter<Double> {
-  @Override
-  public Double convert(String value) throws ConfigurationException {
-    try{
-      return Double.parseDouble(value);
-    }catch(Exception e){
-      throw new ConfigurationException(e.getMessage(), e);
-    }
-  }
+@Retention(RUNTIME)
+@Target(FIELD)
+public @interface CollectionConfiguration {
+  public String delimiter();
+
+  public Class<? extends CollectionConfigurationConverter> collectionConverter() default NoCollectionConfigurationConverter.class;
 }

@@ -22,17 +22,13 @@ import java.math.BigInteger;
  *
  * @author George Aristy
  */
-public class BigIntegerConfigurationConverter extends BaseConfigurationConverter<BigInteger> {
-  public BigIntegerConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class BigIntegerConfigurationConverter implements ConfigurationConverter<BigInteger> {
   @Override
   public BigInteger convert(String value) throws ConfigurationException {
     try{
       return BigInteger.valueOf(Long.parseLong(value));
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, BigInteger.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

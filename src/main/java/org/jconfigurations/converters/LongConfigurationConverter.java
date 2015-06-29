@@ -21,17 +21,13 @@ import org.jconfigurations.ConfigurationException;
  *
  * @author George Aristy
  */
-public class LongConfigurationConverter extends BaseConfigurationConverter<Long> {
-  public LongConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class LongConfigurationConverter implements ConfigurationConverter<Long> {
   @Override
   public Long convert(String value) throws ConfigurationException {
     try{
       return Long.parseLong(value);
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, Double.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

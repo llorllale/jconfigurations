@@ -21,11 +21,7 @@ import org.jconfigurations.ConfigurationException;
  *
  * @author George Aristy
  */
-public class StringConfigurationConverter  extends BaseConfigurationConverter<String> {
-  public StringConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class StringConfigurationConverter implements ConfigurationConverter<String> {
   @Override
   public String convert(String value) throws ConfigurationException {
     return value;

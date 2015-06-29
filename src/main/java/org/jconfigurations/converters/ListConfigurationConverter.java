@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2015 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,23 +15,19 @@
  */
 package org.jconfigurations.converters;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author George Aristy
  * @param <T>
  */
-abstract class BaseConfigurationConverter<T> implements ConfigurationConverter<T> {
-  private final String optionName;
-
-  protected BaseConfigurationConverter(String optionName){
-    this.optionName = optionName;
+public class ListConfigurationConverter<T> extends AbstractCollectionConfigurationConverter<T> {
+  public ListConfigurationConverter(ConfigurationConverter<T> converter) {
+    super(converter, ArrayList.class);
   }
-
-  protected String getOptionName(){
-    return optionName;
-  }
-
-  protected String getErrorMessage(String value, Class<?> to){
-    return getOptionName() + ": cannot convert \"" + value + "\" to " + to.getName();
+  
+  public ListConfigurationConverter(ConfigurationConverter<T> converter, String separator) {
+    super(converter, ArrayList.class, separator);
   }
 }

@@ -21,16 +21,12 @@ import org.jconfigurations.ConfigurationException;
  *
  * @author George Aristy
  */
-public class BooleanConfigurationConverter extends BaseConfigurationConverter<Boolean> {
-  public BooleanConfigurationConverter(String optionName) {
-    super(optionName);
-  }
-
+public class BooleanConfigurationConverter implements ConfigurationConverter<Boolean> {
   public Boolean convert(String value) throws ConfigurationException {
     try{
       return Boolean.parseBoolean(value);
     }catch(Exception e){
-      throw new ConfigurationException(getErrorMessage(value, Double.class), e);
+      throw new ConfigurationException(e.getMessage(), e);
     }
   }
 }

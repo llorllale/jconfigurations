@@ -21,7 +21,9 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -129,6 +131,30 @@ public class ConfiguratorTest {
 
     RequiredConfigurations rc = new RequiredConfigurations();
     new JConfigurator().configure(config, rc); //throws exception
+  }
+
+  @Test
+  public void testCollectionConfiguration() throws Exception {
+    class Test {
+      @CollectionConfiguration(delimiter = ",")
+      List<String> names;
+      @Configuration(converter = FileConfigurationConverter.class)
+      @CollectionConfiguration(delimiter = ":")
+      Set<File> files;
+    }
+
+    Map<String, String> config = new HashMap<String, String>();
+    config.put("names", "George,Peter,Bill");
+    config.put("files", "/tmp/test.txt:/usr/bin/java");
+
+    Test test = new Test();
+    new JConfigurator().configure(config, test);
+    assertEquals(3, test.names.size());
+    assertTrue(test.names.contains("George"));
+    assertTrue(test.names.contains("Peter"));
+    assertTrue(test.names.contains("Bill"));
+    assertEquals(2, test.files.size());
+    test.files.iterator().next().isFile();
   }
   
   private static class HappyPath {
