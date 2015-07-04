@@ -156,6 +156,32 @@ public class ConfiguratorTest {
     assertEquals(2, test.files.size());
     test.files.iterator().next().isFile();
   }
+
+  @Test
+  public void testMapConfiguration() throws Exception {
+    class Test {
+      @MapConfiguration
+      private Map<String, String> mapping;
+      @MapConfiguration(valueConverter = FileConfigurationConverter.class, delimiter = ";", assignmentOp = "\\+")
+      private Map<String, File> files;
+    }
+
+    Map<String, String> config = new HashMap<String, String>();
+    config.put("mapping", "id=1,name=Peter,email=peter@test.com");
+    config.put("files", "f1+C:\\tmp;f2+C:\\Windows");
+
+    Test test = new Test();
+    new JConfigurator().configure(config, test);
+
+    assertEquals(3, test.mapping.size());
+    assertEquals("1", test.mapping.get("id"));
+    assertEquals("Peter", test.mapping.get("name"));
+    assertEquals("peter@test.com", test.mapping.get("email"));
+
+    assertEquals(2, test.files.size());
+    assertEquals(new File("C:\\tmp"), test.files.get("f1"));
+    assertEquals(new File("C:\\Windows"), test.files.get("f2"));
+  }
   
   private static class HappyPath {
     @Configuration

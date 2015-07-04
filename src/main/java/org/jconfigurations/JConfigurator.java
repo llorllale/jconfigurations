@@ -29,16 +29,21 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import org.jconfigurations.converters.CollectionConfigurationConverter;
+import org.jconfigurations.converters.HashMapConfigurationConverter;
 import org.jconfigurations.converters.ListConfigurationConverter;
+import org.jconfigurations.converters.MapConfigurationConverter;
 import org.jconfigurations.converters.NoCollectionConfigurationConverter;
 import org.jconfigurations.converters.NoConfigurationConverter;
+import org.jconfigurations.converters.NoMapConfigurationConverter;
 import org.jconfigurations.converters.SetConfigurationConverter;
 
 /**
@@ -48,6 +53,7 @@ import org.jconfigurations.converters.SetConfigurationConverter;
 public class JConfigurator {
   private static final Map<Class<?>, Class<? extends ConfigurationConverter>> defaultConverters = new HashMap<Class<?>, Class<? extends ConfigurationConverter>>();
   private static final Map<Class<?>, Class<? extends CollectionConfigurationConverter>> defaultCollectionConverters = new HashMap<Class<?>, Class<? extends CollectionConfigurationConverter>>();
+  private static final Map<Class<?>, Class<? extends MapConfigurationConverter>> defaultMapConverters = new HashMap<Class<?>, Class<? extends MapConfigurationConverter>>();
 
   static {
     defaultConverters.put(Float.class, FloatConfigurationConverter.class);
@@ -68,7 +74,14 @@ public class JConfigurator {
 
   static {
     defaultCollectionConverters.put(List.class, ListConfigurationConverter.class);
+    defaultCollectionConverters.put(ArrayList.class, ListConfigurationConverter.class);
     defaultCollectionConverters.put(Set.class, SetConfigurationConverter.class);
+    defaultCollectionConverters.put(HashSet.class, SetConfigurationConverter.class);
+  }
+
+  static {
+    defaultMapConverters.put(Map.class, HashMapConfigurationConverter.class);
+    defaultMapConverters.put(HashMap.class, HashMapConfigurationConverter.class);
   }
 
   /**
@@ -78,13 +91,13 @@ public class JConfigurator {
    * @throws ConfigurationException 
    */
   public void configure(Properties properties, Object object) throws ConfigurationException {
-      Map<String, String> map = new HashMap<String, String>();
+    Map<String, String> map = new HashMap<String, String>();
 
-      for(String property : properties.stringPropertyNames()){
-          map.put(property, properties.getProperty(property));
-      }
+    for(String property : properties.stringPropertyNames()){
+      map.put(property, properties.getProperty(property));
+    }
 
-      configure(map, object);
+    configure(map, object);
   }
 
   /**
@@ -95,12 +108,16 @@ public class JConfigurator {
    */
   public void configure(Map<String, String> properties, Object object) throws ConfigurationException {
     for(Field field : object.getClass().getDeclaredFields()){
-      if(field.isAnnotationPresent(Configuration.class) || field.isAnnotationPresent(CollectionConfiguration.class)){
+      if(field.isAnnotationPresent(Configuration.class) || 
+              field.isAnnotationPresent(CollectionConfiguration.class) || 
+              field.isAnnotationPresent(MapConfiguration.class)){
         validate(properties, field);
         field.setAccessible(true);
 
         if(field.isAnnotationPresent(CollectionConfiguration.class)){
           configureCollectionField(properties, field, object);
+        }else if(field.isAnnotationPresent(MapConfiguration.class)){
+          configureMapField(properties, field, object);
         }else if(field.isAnnotationPresent(Configuration.class)){
           configureField(properties, field, object);
         }
@@ -109,7 +126,6 @@ public class JConfigurator {
   }
 
   private void configureField(Map<String, String> properties, Field field, Object object) throws ConfigurationException {
-    Configuration configuration = field.getAnnotation(Configuration.class);
     ConfigurationConverter converter = getConfigurationConverter(field);
     final String propertyName = getConfigurationName(field);
     final String propertyValue = properties.get(propertyName);
@@ -126,6 +142,16 @@ public class JConfigurator {
     }
   }
 
+  private void configureMapField(Map<String, String> properties, Field field, Object object) throws ConfigurationException {
+    MapConfigurationConverter converter = getMapConfigurationConverter(field);
+
+    try{
+      field.set(object, converter.convert(properties.get(getConfigurationName(field))));
+    }catch(Exception e){
+      throw new ConfigurationException(e.getMessage(), e);
+    }  
+  }
+
   private void configureCollectionField(Map<String, String> properties, Field field, Object object) throws ConfigurationException {
     CollectionConfigurationConverter converter = getCollectionConfigurationConverter(field);
 
@@ -137,7 +163,9 @@ public class JConfigurator {
   }
 
   private void validate(Map<String, String> properties, Field field) throws ConfigurationException {
-    if(!field.isAnnotationPresent(Configuration.class) && !field.isAnnotationPresent(CollectionConfiguration.class)){
+    if(!field.isAnnotationPresent(Configuration.class) && 
+            !field.isAnnotationPresent(CollectionConfiguration.class) &&
+            !field.isAnnotationPresent(MapConfiguration.class)){
       throw new ConfigurationException("Field '" + field.getName() + "' of class '" + field.getDeclaringClass().getName() + "' has no valid annotations.");
     }
 
@@ -162,7 +190,20 @@ public class JConfigurator {
     }
 
     //Check if ConfigurationConverter is defined
-    if(null == getConfigurationConverterClass(field)){
+    if(field.isAnnotationPresent(MapConfiguration.class)){
+      MapConfiguration c = field.getAnnotation(MapConfiguration.class);
+      Class<? extends ConfigurationConverter> keyConverterClass = c.keyConverter() != NoConfigurationConverter.class ? c.keyConverter() : defaultConverters.get(String.class);
+
+      if(keyConverterClass == null){
+      throw new ConfigurationException("No key ConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+      }
+
+      Class<? extends ConfigurationConverter> valueConverterClass = c.valueConverter() != NoConfigurationConverter.class ? c.valueConverter() : defaultConverters.get(String.class);
+
+      if(valueConverterClass == null){
+      throw new ConfigurationException("No value ConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+      }
+    }else if(null == getConfigurationConverterClass(field)){
       throw new ConfigurationException("No ConfigurationConverter found for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
     }
 
@@ -175,7 +216,12 @@ public class JConfigurator {
     final boolean isFlag = field.isAnnotationPresent(FlagConfiguration.class);
 
     if(isFlag && (!Boolean.class.isAssignableFrom(field.getType()) && !boolean.class.isAssignableFrom(field.getType()))){
-        throw new ConfigurationException("Cannot use @FlagConfiguration on non-boolean field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+      throw new ConfigurationException("Cannot use @FlagConfiguration on non-boolean field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
+    }
+
+    //Check @MapConfiguration compatibility
+    if(field.isAnnotationPresent(MapConfiguration.class) && !Map.class.isAssignableFrom(field.getType())){
+      throw new ConfigurationException("Cannot use @MapConfiguration on non-map field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.");
     }
   }
 
@@ -215,9 +261,35 @@ public class JConfigurator {
     return collectionConverter;  
   }
 
+  private MapConfigurationConverter getMapConfigurationConverter(Field field) throws ConfigurationException {
+    MapConfigurationConverter mapConfigurationConverter = null; //return variable
+    final MapConfiguration config = field.getAnnotation(MapConfiguration.class);
+    final String delimiter = config.delimiter();
+    final String assignmentOp = config.assignmentOp();
+    final Class<? extends ConfigurationConverter> keyConverterClass = config.keyConverter() != NoConfigurationConverter.class ? config.keyConverter() : defaultConverters.get(String.class);
+    final Class<? extends ConfigurationConverter> valueConverterClass = config.valueConverter() != NoConfigurationConverter.class ? config.valueConverter() : defaultConverters.get(String.class);
+    final Class<? extends MapConfigurationConverter> mapConfigurationConverterClass = getMapConfigurationConverterClass(field);
+
+    try{
+      ConfigurationConverter keyConverter = keyConverterClass.newInstance();
+      ConfigurationConverter valueConverter = valueConverterClass.newInstance();
+      mapConfigurationConverter = mapConfigurationConverterClass.getConstructor(ConfigurationConverter.class, ConfigurationConverter.class, String.class, String.class).newInstance(keyConverter, valueConverter, delimiter, assignmentOp);
+    }catch(Exception e){
+      throw new ConfigurationException("Unable to instantiate converter '" + mapConfigurationConverterClass.getName() + "' declared for field '" + field.getName() + "' in class '" + field.getDeclaringClass().getName() + "'.", e);
+    }
+
+    return mapConfigurationConverter;
+  }
+
   private Class<? extends CollectionConfigurationConverter> getCollectionConfigurationConverterClass(Field field) throws ConfigurationException {
     CollectionConfiguration config = field.getAnnotation(CollectionConfiguration.class);
     Class<? extends CollectionConfigurationConverter> converterClass = config.collectionConverter() != NoCollectionConfigurationConverter.class ? config.collectionConverter() : defaultCollectionConverters.get(field.getType());
+    return converterClass;
+  }
+
+  private Class<? extends MapConfigurationConverter> getMapConfigurationConverterClass(Field field) throws ConfigurationException {
+    MapConfiguration config = field.getAnnotation(MapConfiguration.class);
+    Class<? extends MapConfigurationConverter> converterClass = config.mapConverter() != NoMapConfigurationConverter.class ? config.mapConverter() : defaultMapConverters.get(field.getType());
     return converterClass;
   }
 
