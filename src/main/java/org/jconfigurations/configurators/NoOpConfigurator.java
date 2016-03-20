@@ -1,5 +1,5 @@
-/* 
- * Copyright 2015 George Aristy.
+/*
+ * Copyright 2016 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jconfigurations.configurators;
+
+import org.jconfigurations.ConfigurationException;
+
 /**
  * <pre>
- * Contains the {@link org.jconfigurations.converters.ConfigurationConverter} interface and its implementations.
+ * Special kind of {@link Configurator} that does absolutely nothing when its 
+ * {@link #configure(java.lang.Object)} method is invoked.
+ * It is used internally to end chains of {@link Configurator configurators}.
  * </pre>
+ * 
+ * @author George Aristy
  */
-package org.jconfigurations.converters;
+public class NoOpConfigurator implements Configurator {
+  @Override
+  public void configure(Object object) throws ConfigurationException {
+    //do nothing
+  }
+}

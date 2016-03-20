@@ -1,5 +1,5 @@
-/* 
- * Copyright 2015 George Aristy.
+/*
+ * Copyright 2016 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- * <pre>
- * Contains the {@link org.jconfigurations.converters.ConfigurationConverter} interface and its implementations.
- * </pre>
- */
 package org.jconfigurations.converters;
+
+import java.net.URL;
+import org.jconfigurations.ConfigurationException;
+
+/**
+ *
+ * @author George Aristy
+ */
+public class URLConfigurationConverter implements ConfigurationConverter<URL> {
+
+  @Override
+  public URL convert(String value) throws ConfigurationException {
+    try{
+      return new URL(value);
+    }catch(Exception e){
+      throw new ConfigurationException(e.getMessage(), e);
+    }
+  }
+}

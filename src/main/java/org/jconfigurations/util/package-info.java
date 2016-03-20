@@ -1,5 +1,5 @@
-/* 
- * Copyright 2015 George Aristy.
+/*
+ * Copyright 2016 George Aristy.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 /**
- * <pre>
- * Contains the {@link org.jconfigurations.converters.ConfigurationConverter} interface and its implementations.
- * </pre>
+ * Contains utility classes and interfaces.
  */
-package org.jconfigurations.converters;
+package org.jconfigurations.util;

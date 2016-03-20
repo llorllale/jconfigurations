@@ -15,14 +15,32 @@
  */
 package org.jconfigurations.converters;
 
+import org.jconfigurations.Configuration;
 import org.jconfigurations.ConfigurationException;
+import org.jconfigurations.configurators.Configurator;
 
 /**
- * Converts a configuration value into the appropriate type {@code T} given it's string {@link #convert(java.lang.String) value}.<br>
- * User-specific implementations of this interface must provide an accessible no-arg constructor.
+ * <pre>
+ * {@code ConfigurationConverter}s are used by {@link Configurator configurators} to convert a configuration
+ * value into an instance of type {@code T}.
+ * Several default implementations for primitives and other common types are already provided.
+ * Users may opt to implement their own converters and specify those via {@link Configuration#converter()}.
+ * <b>Implementations must provide an accessible no-arg constructor.</b>
+ * </pre>
  * @author George Aristy
  * @param <T>
+ * @see Configuration#converter() 
+ * @see Configurator
+ * @see Configuration
  */
+@FunctionalInterface
 public interface ConfigurationConverter<T> {
+  
+  /**
+   * Converts {@code value} into an instance of type {@code T}.
+   * @param value
+   * @return
+   * @throws ConfigurationException if {@code value} cannot be converted to an instance of type {@code T}.
+   */
   public T convert(String value) throws ConfigurationException;
 }

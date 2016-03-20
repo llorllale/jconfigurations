@@ -15,15 +15,28 @@
  */
 package org.jconfigurations.converters;
 
+import org.jconfigurations.Configuration;
 import org.jconfigurations.ConfigurationException;
+import org.jconfigurations.functions.DefaultTypeConverterFunction;
 
 /**
- *
+ * <pre>
+ * Special {@link ConfigurationConverter} that always throws a {@link ConfigurationException}
+ * when its {@link #convert(java.lang.String)} method is called.
+ * Although it is assigned by default to {@link Configuration#converter()}, the framework
+ * attempts to locate a suitable converter before falling back to this one.
+ * Suitable converters are found either by the user explicitely specifying a different 
+ * one via {@link Configuration#converter()}, or by using the {@link DefaultTypeConverterFunction}.
+ * </pre>
+ * 
  * @author George Aristy
  */
 public class NoConfigurationConverter implements ConfigurationConverter<Void> {
 
+  @Override
   public Void convert(String value) throws ConfigurationException {
-    throw new UnsupportedOperationException("Not supported yet."); 
+    throw new ConfigurationException(
+            String.format("No configuration converter found to convert value '%s'", value)
+    );
   }
 }

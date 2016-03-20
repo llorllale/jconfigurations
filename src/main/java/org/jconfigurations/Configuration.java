@@ -17,53 +17,34 @@ package org.jconfigurations;
 
 import org.jconfigurations.converters.ConfigurationConverter;
 import org.jconfigurations.converters.NoConfigurationConverter;
-import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.ElementType.FIELD;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
+import org.jconfigurations.configurators.BasicConfigurator;
+import org.jconfigurations.configurators.Configurator;
 
 /**
- * Marks a field as configurable.
+ * <pre>
+ * The {@link BasicConfigurator} acts upon fields marked with {@link Configuration}.
+ * Fields marked with {@link Configuration} should be of "atomic" types such as 
+ * primitives (or their boxed types) and other "non-collection" types, 
+ * eg. {@link java.io.File} or {@link java.math.BigDecimal}.
+ * </pre>
  * @author George Aristy
- * @see JConfigurator#configure(java.util.Map, java.lang.Object) 
+ * @see Configurator
  */
 @Retention(RUNTIME)
-@Target({FIELD, ANNOTATION_TYPE})
+@Target(FIELD)
 public @interface Configuration {
   /**
-   * The {@link Configuration configuration's} name as expected in the configuration source.<br>
-   * By default, the name for a given configuration parameter is the field's own name as declared in 
-   * the source code.<br>
-   * Eg.:<br>
    * <pre>
-   * {@literal @}Configuration
-   * private String name;
-   * </pre>
-   * ... will be assigned the value of a configuration property named {@code name}, while:<br>
-   * <pre>
-   * {@literal @}Configuration(name = "webServer.name")
-   * private String name;
-   * </pre>
-   * ... will listen for a configuration property named {@code webServer.name}.
-   * @return 
-   */
-  public String name() default "";
-  
-  /**
-   * {@code false} by default, a {@link Configuration configuration} marked as required will trigger an
-   * {@link ConfigurationException error} if it's not found in the input source of configuratios according 
-   * to its {@link #name() name}.
-   * @return 
-   */
-  public boolean required() default false;
-
-  /**
-   * Specifies the {@link ConfigurationConverter converter} to use to set this {@link Configuration configuration's} value.<br>
-   * If none is specified, then a default converter is used from {@code org.jconfigurations.converters}.<br>
+   * Specifies the {@link ConfigurationConverter converter} to use to set this {@link Configuration configuration's} value.
+   * If none is specified, then a default converter is used from {@code org.jconfigurations.converters}.
    * If no default converter then a {@link ConfigurationException} will be thrown.
+   * </pre>
    * @return 
-   * @see JConfigurator#configure(java.util.Map, java.lang.Object) 
+   * @see ConfigurationConverter
    */
   public Class<? extends ConfigurationConverter> converter() default NoConfigurationConverter.class;
 }
