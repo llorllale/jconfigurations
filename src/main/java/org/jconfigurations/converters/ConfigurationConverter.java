@@ -17,6 +17,7 @@ package org.jconfigurations.converters;
 
 import org.jconfigurations.Configuration;
 import org.jconfigurations.ConfigurationException;
+import org.jconfigurations.configurators.BasicConfigurator;
 import org.jconfigurations.configurators.Configurator;
 
 /**
@@ -25,7 +26,8 @@ import org.jconfigurations.configurators.Configurator;
  * value into an instance of type {@code T}.
  * Several default implementations for primitives and other common types are already provided.
  * Users may opt to implement their own converters and specify those via {@link Configuration#converter()}.
- * <b>Implementations must provide an accessible no-arg constructor.</b>
+ * <b>The {@link BasicConfigurator} requires that implementations must provide 
+ * an accessible no-arg constructor.</b>
  * </pre>
  * @author George Aristy
  * @param <T>

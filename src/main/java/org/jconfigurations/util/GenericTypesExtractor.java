@@ -18,14 +18,13 @@ package org.jconfigurations.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * <pre>
- * Helper class that {@link #getGenericOrRawTypes() extracts} a given field's 
+ * Helper class that {@link #getGenericTypes() extracts} a given field's 
  * generic type parameters.
  * </pre>
  * 
@@ -37,23 +36,28 @@ public class GenericTypesExtractor {
   /**
    * 
    * @param field 
+   * @throws NullPointerException if {@code field} is {@code null}.
    */
   public GenericTypesExtractor(Field field){
+    final List<Class<?>> tmp = new ArrayList<>();
+
     if(field.getGenericType() instanceof ParameterizedType){
       ParameterizedType generics = (ParameterizedType) field.getGenericType();
-      this.genericTypes = Stream.of(generics.getActualTypeArguments())
+      Stream.of(generics.getActualTypeArguments())
               .map(t -> (Class<?>) t)
-              .collect(Collectors.toList());
-    }else{
-      this.genericTypes = Arrays.asList(field.getType());
+              .forEach(tmp::add);
     }
+
+    this.genericTypes = Collections.unmodifiableList(tmp);
   }
 
   /**
    * 
-   * @return 
+   * @return an immutable list of the generic types declared for the given 
+   * {@link #GenericTypesExtractor(java.lang.reflect.Field) field}. If the field
+   * doesn't declare any generic types then the list will be empty.
    */
-  public List<Class<?>> getGenericOrRawTypes(){
-    return new ArrayList<>(genericTypes);
+  public List<Class<?>> getGenericTypes(){
+    return genericTypes;
   }
 }

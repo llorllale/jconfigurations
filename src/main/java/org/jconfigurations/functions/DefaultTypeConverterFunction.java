@@ -56,7 +56,7 @@ import org.jconfigurations.converters.URLConfigurationConverter;
  * 
  * @author George Aristy
  */
-public final class DefaultTypeConverterFunction implements Function<Class<?>, ConfigurationConverter> {
+public final class DefaultTypeConverterFunction implements Function<Class<?>, Class<? extends ConfigurationConverter>> {
   private static final Map<Class<?>, Class<? extends ConfigurationConverter>> DEFAULTS;
 
   static {
@@ -79,17 +79,7 @@ public final class DefaultTypeConverterFunction implements Function<Class<?>, Co
   }
 
   @Override
-  public ConfigurationConverter apply(Class<?> clazz) {
-    try{
-      return DEFAULTS.getOrDefault(clazz, NoConfigurationConverter.class).newInstance();
-    }catch(InstantiationException | IllegalAccessException e){
-      throw new RuntimeException(
-              String.format(
-                      "This wasn't supposed to happen, but the no-arg constructor of a default converter just exploded! (offending class: %s)",
-                      DEFAULTS.getOrDefault(clazz, NoConfigurationConverter.class).getName()
-              ),
-              e
-      );
-    }
+  public Class<? extends ConfigurationConverter> apply(Class<?> clazz) {
+    return DEFAULTS.getOrDefault(clazz, NoConfigurationConverter.class);
   }
 }

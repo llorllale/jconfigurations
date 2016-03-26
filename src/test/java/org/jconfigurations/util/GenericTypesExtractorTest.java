@@ -21,7 +21,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,18 +58,18 @@ public class GenericTypesExtractorTest {
   @Test
   public void genericList() throws Exception {
     List<Class<?>> test = new GenericTypesExtractor(TestClass.class.getDeclaredField("strList"))
-            .getGenericOrRawTypes();
+            .getGenericTypes();
 
-    assertThat(test.size(), is(1));
+    assertEquals(1, test.size());
     assertThat(test, hasItem(String.class));
   }
 
   @Test
   public void genericMap() throws Exception {
     List<Class<?>> test = new GenericTypesExtractor(TestClass.class.getDeclaredField("strObjMap"))
-            .getGenericOrRawTypes();
+            .getGenericTypes();
 
-    assertThat(test.size(), is(2));
+    assertEquals(2, test.size());
     assertThat(test, hasItems(String.class, Object.class));
     assertThat(test.get(0), is(equalTo(String.class)));
     assertThat(test.get(1), is(equalTo(Object.class)));
@@ -76,19 +78,17 @@ public class GenericTypesExtractorTest {
   @Test
   public void rawList() throws Exception {
     List<Class<?>> test = new GenericTypesExtractor(TestClass.class.getDeclaredField("rawList"))
-            .getGenericOrRawTypes();
+            .getGenericTypes();
 
-    assertThat(test.size(), is(1));
-    assertThat(test, hasItem(List.class));
+    assertTrue(test.isEmpty());
   }
 
   @Test
   public void rawMap() throws Exception {
     List<Class<?>> test = new GenericTypesExtractor(TestClass.class.getDeclaredField("rawMap"))
-            .getGenericOrRawTypes();
+            .getGenericTypes();
 
-    assertThat(test.size(), is(1));
-    assertThat(test, hasItem(Map.class));
+    assertTrue(test.isEmpty());
   }
   
   private static class TestClass {

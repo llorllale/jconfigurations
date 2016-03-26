@@ -22,10 +22,14 @@ import org.jconfigurations.util.ErrorFunction;
 
 /**
  * Function that extracts a field's name from either:
+ * 
  * <ol>
  *  <li>its {@literal @}{@code Name} value, or</li>
  *  <li>its {@link Field#getName() name} as declared in the source code</li>
  * </ol>
+ * 
+ * Using this {@link ErrorFunction function} with a field whose {@link Name name} is
+ * {@code empty} will result in a {@link ConfigurationException}.
  * 
  * @author George Aristy
  * @see Name

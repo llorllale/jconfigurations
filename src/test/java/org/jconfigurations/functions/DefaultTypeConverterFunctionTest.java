@@ -19,8 +19,6 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import org.jconfigurations.converters.BigDecimalConfigurationConverter;
 import org.jconfigurations.converters.BigIntegerConfigurationConverter;
 import org.jconfigurations.converters.BooleanConfigurationConverter;
@@ -33,7 +31,7 @@ import org.jconfigurations.converters.StringConfigurationConverter;
 import org.jconfigurations.converters.URLConfigurationConverter;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -67,15 +65,15 @@ public class DefaultTypeConverterFunctionTest {
   public void produceCorrectDefaultConfigurationConverters() {
     DefaultTypeConverterFunction f = new DefaultTypeConverterFunction();
 
-    assertThat(f.apply(Integer.class), is(instanceOf(IntegerConfigurationConverter.class)));
-    assertThat(f.apply(Double.class), is(instanceOf(DoubleConfigurationConverter.class)));
-    assertThat(f.apply(Float.class), is(instanceOf(FloatConfigurationConverter.class)));
-    assertThat(f.apply(Long.class), is(instanceOf(LongConfigurationConverter.class)));
-    assertThat(f.apply(String.class), is(instanceOf(StringConfigurationConverter.class)));
-    assertThat(f.apply(Boolean.class), is(instanceOf(BooleanConfigurationConverter.class)));
-    assertThat(f.apply(BigDecimal.class), is(instanceOf(BigDecimalConfigurationConverter.class)));
-    assertThat(f.apply(BigInteger.class), is(instanceOf(BigIntegerConfigurationConverter.class)));
-    assertThat(f.apply(File.class), is(instanceOf(FileConfigurationConverter.class)));
-    assertThat(f.apply(URL.class), is(instanceOf(URLConfigurationConverter.class)));
+    assertEquals(IntegerConfigurationConverter.class, f.apply(Integer.class));
+    assertEquals(DoubleConfigurationConverter.class, f.apply(Double.class));
+    assertEquals(FloatConfigurationConverter.class, f.apply(Float.class));
+    assertEquals(LongConfigurationConverter.class, f.apply(Long.class));
+    assertEquals(StringConfigurationConverter.class, f.apply(String.class));
+    assertEquals(BooleanConfigurationConverter.class, f.apply(Boolean.class));
+    assertEquals(BigDecimalConfigurationConverter.class, f.apply(BigDecimal.class));
+    assertEquals(BigIntegerConfigurationConverter.class, f.apply(BigInteger.class));
+    assertEquals(FileConfigurationConverter.class, f.apply(File.class));
+    assertEquals(URLConfigurationConverter.class, f.apply(URL.class));
   }
 }

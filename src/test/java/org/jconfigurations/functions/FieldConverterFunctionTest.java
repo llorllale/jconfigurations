@@ -17,12 +17,10 @@ package org.jconfigurations.functions;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import org.jconfigurations.Configuration;
 import org.jconfigurations.ConfigurationException;
 import org.jconfigurations.converters.ConfigurationConverter;
-import org.jconfigurations.converters.IntegerConfigurationConverter;
 import org.jconfigurations.converters.NoConfigurationConverter;
 import org.jconfigurations.converters.StringConfigurationConverter;
 import org.junit.After;
@@ -63,7 +61,7 @@ public class FieldConverterFunctionTest {
 
     assertThat(
             f.apply(TestClass.class.getDeclaredField("nonAnnotatedField")), 
-            is(instanceOf(IntegerConfigurationConverter.class))
+            is(NoConfigurationConverter.class)
     );
   }
 
@@ -73,7 +71,7 @@ public class FieldConverterFunctionTest {
 
     assertThat(
             f.apply(TestClass.class.getDeclaredField("annotatedField")), 
-            is(instanceOf(StringConfigurationConverter.class))
+            is(StringConfigurationConverter.class)
     );
   }
 
@@ -83,7 +81,7 @@ public class FieldConverterFunctionTest {
 
     assertThat(
             f.apply(TestClass.class.getDeclaredField("customConverterField")), 
-            is(instanceOf(TestConverter.class))
+            is(TestConverter.class)
     );
   }
 
@@ -93,7 +91,7 @@ public class FieldConverterFunctionTest {
 
     assertThat(
             f.apply(TestClass.class.getDeclaredField("unknownCustomConverterField")), 
-            is(instanceOf(NoConfigurationConverter.class))
+            is(NoConfigurationConverter.class)
     );
   }
   

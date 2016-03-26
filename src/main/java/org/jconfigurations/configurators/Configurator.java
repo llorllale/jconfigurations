@@ -33,7 +33,9 @@ import org.jconfigurations.source.ConfigurationSource;
  */
 public interface Configurator {
   /**
-   * Assigns values to {@code object}'s fields annotated with {@link Configuration}.
+   * Assigns values to {@code object}'s fields annotated with the framework's 
+   * annotations.
+   * 
    * @param object any object
    * @throws ConfigurationException 
    * @throws NullPointerException if{@code object} is {@code null}.

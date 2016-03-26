@@ -27,33 +27,33 @@ import org.jconfigurations.converters.NoConfigurationConverter;
 import org.jconfigurations.util.ErrorFunction;
 
 /**
- * <pre>
  * Function that produces a suitable {@link ConfigurationConverter} for a given field by
  * analyzing the field's {@link Configuration#converter()} value. If said value is equal
- * to {@link NoConfigurationConverter}, or if the field is NOT annotated with 
- * {@link Configuration}, then it delegates to a 'default' function.
- * </pre>
+ * to {@link NoConfigurationConverter} it then delegates to a 'fallback' function.
+ * 
+ * The {@link FieldConverterFunction} requires that implementations of 
+ * {@link ConfigurationConverter} provide an accessible no-arg constructor.
  *
  * @author George Aristy
  */
 public class FieldConverterFunction implements ErrorFunction<Field, ConfigurationConverter, ConfigurationException> {
-  private final Function<Class<?>, ConfigurationConverter> delegate;
+  private final Function<Class<?>, Class<? extends ConfigurationConverter>> defaultTypeConverterFunction;
 
   /**
    * 
    * 
-   * @param defaultTypeFunction the default function to delegate to when a given field 
+   * @param defaultTypeConverterFunction the default function to delegate to when a given field 
    * does not have an explicit {@link ConfigurationConverter converter} specified 
    * (other than the default {@link NoConfigurationConverter}).
-   * @throws NullPointerException if {@code delegate} is {@code null}.
+   * @throws NullPointerException if {@code defaultTypeConverterFunction} is {@code null}.
    */
-  public FieldConverterFunction(Function<Class<?>, ConfigurationConverter> defaultTypeFunction) {
-    this.delegate = Objects.requireNonNull(defaultTypeFunction, "null defaultTypeFunction");
+  public FieldConverterFunction(Function<Class<?>, Class<? extends ConfigurationConverter>> defaultTypeConverterFunction) {
+    this.defaultTypeConverterFunction = Objects.requireNonNull(defaultTypeConverterFunction, "null defaultTypeConverterFunction");
   }
 
   /**
    * <pre>
-   * Defaults to the {@link DefaultTypeConverterFunction} as delegate
+   * Defaults to the {@link DefaultTypeConverterFunction} as defaultTypeConverterFunction
    * </pre>
    * 
    * @see #FieldConverterFunction(java.util.function.Function) 
@@ -64,20 +64,26 @@ public class FieldConverterFunction implements ErrorFunction<Field, Configuratio
 
   @Override
   public ConfigurationConverter apply(Field field) throws ConfigurationException {
-    if(field.isAnnotationPresent(Configuration.class) && 
-            !NoConfigurationConverter.class.equals(field.getAnnotation(Configuration.class).converter())
-            ){
+    if(!field.isAnnotationPresent(Configuration.class)) {
+      return new NoConfigurationConverter();
+    }else{
+      Configuration fieldConfig = field.getAnnotation(Configuration.class);
+      Constructor<? extends ConfigurationConverter> constructor = null;
+
       try{
-        Constructor<? extends ConfigurationConverter> c = field.getAnnotation(Configuration.class)
-                .converter()
-                .getConstructor();
-        c.setAccessible(true);
-        return c.newInstance();
+          if(!NoConfigurationConverter.class.equals(fieldConfig.converter())){
+            constructor = fieldConfig.converter().getConstructor();
+          }else{
+            constructor = defaultTypeConverterFunction.apply(field.getType()).getConstructor();
+          }
+  
+          constructor.setAccessible(true);
+          return constructor.newInstance();
       }catch(NoSuchMethodException e){
         throw new ConfigurationException(
                 String.format(
                         "ConfigurationConverter of type %s for field %s of class %s does not have an accessible no-arg constructor.",
-                        field.getAnnotation(Configuration.class).converter().getName(), 
+                        constructor.getDeclaringClass().getName(), 
                         field.getName(), 
                         field.getDeclaringClass().getName()
                 ), 
@@ -87,15 +93,13 @@ public class FieldConverterFunction implements ErrorFunction<Field, Configuratio
         throw new ConfigurationException(
                 String.format(
                         "Error instantiating ConfigurationConverter of type %s for field %s of class %s",
-                        field.getAnnotation(Configuration.class).converter().getName(), 
+                        constructor.getDeclaringClass().getName(),
                         field.getName(), 
                         field.getDeclaringClass().getName()
                 ), 
                 e
         );
       }
-    }else{
-      return delegate.apply(field.getType());
     }
   }
 }

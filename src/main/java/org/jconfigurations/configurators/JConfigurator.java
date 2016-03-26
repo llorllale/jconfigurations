@@ -42,7 +42,10 @@ public class JConfigurator implements Configurator {
             new RequiredConfigurator(
                     source, 
                     new BasicConfigurator(
-                            source
+                            source,
+                            new CollectionConfigurator(
+                                    source
+                            )
                     )
             );
   }
