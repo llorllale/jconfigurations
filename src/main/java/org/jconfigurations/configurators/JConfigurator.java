@@ -44,7 +44,10 @@ public class JConfigurator implements Configurator {
                     new BasicConfigurator(
                             source,
                             new CollectionConfigurator(
-                                    source
+                                    source,
+                                    new MapConfigurator(
+                                            source
+                                    )
                             )
                     )
             );
