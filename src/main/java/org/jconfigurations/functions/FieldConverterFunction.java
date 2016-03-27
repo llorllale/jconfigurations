@@ -36,7 +36,7 @@ import org.jconfigurations.util.ErrorFunction;
  *
  * @author George Aristy
  */
-public class FieldConverterFunction implements ErrorFunction<Field, ConfigurationConverter, ConfigurationException> {
+public class FieldConverterFunction implements ErrorFunction<Field, ConfigurationConverter> {
   private final Function<Class<?>, Class<? extends ConfigurationConverter>> defaultTypeConverterFunction;
 
   /**

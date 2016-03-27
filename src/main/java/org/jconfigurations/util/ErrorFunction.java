@@ -15,21 +15,22 @@
  */
 package org.jconfigurations.util;
 
+import org.jconfigurations.ConfigurationException;
+
 /**
  * A function that can throw an exception.
  * 
  * @author George Aristy
  * @param <T> the function's input type
  * @param <R> the function's return type
- * @param <E> the function's error type
  */
-public interface ErrorFunction<T, R, E extends Exception> {
+public interface ErrorFunction<T, R> {
   /**
    * Idempotent operation that can possibly throw an error {@code E}.
    * 
    * @param t the input parameter
    * @return the return value {@code R}.
-   * @throws E if there is an error that impedes the function from producing {@code R}.
+   * @throws ConfigurationException if there is an error that impedes the function from producing {@code R}.
    */
-  public R apply(T t) throws E;
+  public R apply(T t) throws ConfigurationException;
 }

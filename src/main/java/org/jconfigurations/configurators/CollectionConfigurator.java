@@ -46,8 +46,8 @@ import org.jconfigurations.functions.DefaultFieldNameFunction;
 public class CollectionConfigurator implements Configurator {
   private final ConfigurationSource source;
   private final Configurator configurator;
-  private final ErrorFunction<Field, String, ConfigurationException> fieldNameFunction;
-  private final ErrorFunction<Field, CollectionConfigurationConverter, ConfigurationException> fieldConverterFunction;
+  private final ErrorFunction<Field, String> fieldNameFunction;
+  private final ErrorFunction<Field, CollectionConfigurationConverter> fieldConverterFunction;
 
   /**
    * Fully customizable constructor that allows the user to chain link another 
@@ -65,8 +65,8 @@ public class CollectionConfigurator implements Configurator {
   public CollectionConfigurator(
           ConfigurationSource source, 
           Configurator configurator,
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction, 
-          ErrorFunction<Field, CollectionConfigurationConverter, ConfigurationException> fieldConverterFunction
+          ErrorFunction<Field, String> fieldNameFunction, 
+          ErrorFunction<Field, CollectionConfigurationConverter> fieldConverterFunction
   ) {
     this.source = requireNonNull(source, "null source");
     this.configurator = requireNonNull(configurator, "null configurator");
@@ -88,7 +88,7 @@ public class CollectionConfigurator implements Configurator {
   public CollectionConfigurator(
         ConfigurationSource source,
         Configurator configurator,
-        ErrorFunction<Field, String, ConfigurationException> fieldNameFunction
+        ErrorFunction<Field, String> fieldNameFunction
   ) {
     this(source, configurator, fieldNameFunction, new CollectionFieldConverterFunction());
   }

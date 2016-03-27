@@ -46,7 +46,7 @@ import org.jconfigurations.util.GenericTypesExtractor;
  * @see DefaultCollectionTypeConverterFunction
  */
 public class CollectionFieldConverterFunction 
-        implements ErrorFunction<Field, CollectionConfigurationConverter, ConfigurationException> 
+        implements ErrorFunction<Field, CollectionConfigurationConverter> 
 {
   private final Function<Class<?>, Class<? extends ConfigurationConverter>> typeConverterFunction;
   private final Function<Class<?>, Class<? extends CollectionConfigurationConverter>> collectionTypeConverterFunction;

@@ -47,8 +47,8 @@ import org.jconfigurations.util.ErrorFunction;
 public class BasicConfigurator implements Configurator {
   private final ConfigurationSource source;
   private final Configurator configurator;
-  private final ErrorFunction<Field, String, ConfigurationException> fieldNameFunction;
-  private final ErrorFunction<Field, ConfigurationConverter, ConfigurationException> fieldConverterFunction;
+  private final ErrorFunction<Field, String> fieldNameFunction;
+  private final ErrorFunction<Field, ConfigurationConverter> fieldConverterFunction;
 
   /**
    * Fully customizable constructor that allows the user to chain link another 
@@ -66,8 +66,8 @@ public class BasicConfigurator implements Configurator {
   public BasicConfigurator(
           ConfigurationSource source, 
           Configurator configurator,
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction, 
-          ErrorFunction<Field, ConfigurationConverter, ConfigurationException> fieldConverterFunction
+          ErrorFunction<Field, String> fieldNameFunction, 
+          ErrorFunction<Field, ConfigurationConverter> fieldConverterFunction
   ) {
     this.source = Objects.requireNonNull(source, "null configuration source.");
     this.configurator = Objects.requireNonNull(configurator,"null configurator.");
@@ -88,7 +88,7 @@ public class BasicConfigurator implements Configurator {
   public BasicConfigurator(
           ConfigurationSource source,
           Configurator configurator,
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction
+          ErrorFunction<Field, String> fieldNameFunction
   ){
     this(source, configurator, fieldNameFunction, new FieldConverterFunction());
   }

@@ -34,7 +34,7 @@ import org.jconfigurations.util.ErrorFunction;
  * @author George Aristy
  * @see Name
  */
-public class DefaultFieldNameFunction implements ErrorFunction<Field, String, ConfigurationException> {
+public class DefaultFieldNameFunction implements ErrorFunction<Field, String> {
   @Override
   public String apply(Field field) throws ConfigurationException {
     if(field.isAnnotationPresent(Name.class)){

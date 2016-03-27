@@ -45,7 +45,7 @@ import static java.util.Objects.requireNonNull;
  * @see DefaultMapTypeConverterFunction
  */
 public class MapFieldConverterFunction 
-        implements ErrorFunction<Field, MapConfigurationConverter, ConfigurationException> 
+        implements ErrorFunction<Field, MapConfigurationConverter> 
 {
   private final Function<Class<?>, Class<? extends ConfigurationConverter>> typeConverterFunction;
   private final Function<Class<?>, Class<? extends MapConfigurationConverter>> mapTypeConverterFunction;

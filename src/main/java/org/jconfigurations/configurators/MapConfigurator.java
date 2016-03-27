@@ -44,8 +44,8 @@ import org.jconfigurations.util.ErrorFunction;
 public class MapConfigurator implements Configurator {
   private final ConfigurationSource source;
   private final Configurator configurator;
-  private final ErrorFunction<Field, String, ConfigurationException> fieldNameFunction;
-  private final ErrorFunction<Field, MapConfigurationConverter, ConfigurationException> fieldConverterFunction;
+  private final ErrorFunction<Field, String> fieldNameFunction;
+  private final ErrorFunction<Field, MapConfigurationConverter> fieldConverterFunction;
 
   /**
    * Fully customizable constructor that allows the user to chain link another 
@@ -63,8 +63,8 @@ public class MapConfigurator implements Configurator {
   public MapConfigurator(
           ConfigurationSource source, 
           Configurator configurator, 
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction, 
-          ErrorFunction<Field, MapConfigurationConverter, ConfigurationException> fieldConverterFunction
+          ErrorFunction<Field, String> fieldNameFunction, 
+          ErrorFunction<Field, MapConfigurationConverter> fieldConverterFunction
   ) {
     this.source = requireNonNull(source, "null source");
     this.configurator = requireNonNull(configurator, "null configurator");
@@ -86,7 +86,7 @@ public class MapConfigurator implements Configurator {
   public MapConfigurator(
           ConfigurationSource source, 
           Configurator configurator, 
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction
+          ErrorFunction<Field, String> fieldNameFunction
   ){
     this(source, configurator, fieldNameFunction, new MapFieldConverterFunction());
   }

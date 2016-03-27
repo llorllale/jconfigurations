@@ -40,7 +40,7 @@ import org.jconfigurations.util.ErrorFunction;
 public class RequiredConfigurator implements Configurator {
   private final ConfigurationSource source;
   private final Configurator configurator;
-  private final ErrorFunction<Field, String, ConfigurationException> fieldNameFunction;
+  private final ErrorFunction<Field, String> fieldNameFunction;
 
   /**
    * 
@@ -53,7 +53,7 @@ public class RequiredConfigurator implements Configurator {
   public RequiredConfigurator(
           ConfigurationSource source, 
           Configurator configurator, 
-          ErrorFunction<Field, String, ConfigurationException> fieldNameFunction
+          ErrorFunction<Field, String> fieldNameFunction
   ) {
     this.source = Objects.requireNonNull(source, "null source.");
     this.configurator = Objects.requireNonNull(configurator, "null configurator.");
