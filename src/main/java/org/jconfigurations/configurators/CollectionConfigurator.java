@@ -16,14 +16,10 @@
 package org.jconfigurations.configurators;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.stream.Stream;
 import org.jconfigurations.CollectionConfiguration;
-import org.jconfigurations.ConfigurationException;
 import org.jconfigurations.converters.CollectionConfigurationConverter;
 import org.jconfigurations.source.ConfigurationSource;
 import org.jconfigurations.util.ErrorFunction;
-import static java.util.Objects.requireNonNull;
 import org.jconfigurations.Name;
 import org.jconfigurations.converters.ConfigurationConverter;
 import org.jconfigurations.functions.CollectionFieldConverterFunction;
@@ -43,12 +39,7 @@ import org.jconfigurations.functions.DefaultFieldNameFunction;
  * @see CollectionFieldConverterFunction
  * @see DefaultCollectionTypeConverterFunction
  */
-public class CollectionConfigurator implements Configurator {
-  private final ConfigurationSource source;
-  private final Configurator configurator;
-  private final ErrorFunction<Field, String> fieldNameFunction;
-  private final ErrorFunction<Field, CollectionConfigurationConverter> fieldConverterFunction;
-
+public class CollectionConfigurator extends BaseConfigurator {
   /**
    * Fully customizable constructor that allows the user to chain link another 
    * {@link Configurator configurator} in order to compose a multi-featured chain.
@@ -68,10 +59,7 @@ public class CollectionConfigurator implements Configurator {
           ErrorFunction<Field, String> fieldNameFunction, 
           ErrorFunction<Field, CollectionConfigurationConverter> fieldConverterFunction
   ) {
-    this.source = requireNonNull(source, "null source");
-    this.configurator = requireNonNull(configurator, "null configurator");
-    this.fieldNameFunction = requireNonNull(fieldNameFunction, "null fieldNameFunction");
-    this.fieldConverterFunction = requireNonNull(fieldConverterFunction, "null fieldConverterFunction");
+    super(CollectionConfiguration.class, source, configurator, fieldNameFunction, fieldConverterFunction);
   }
 
   /**
@@ -116,40 +104,5 @@ public class CollectionConfigurator implements Configurator {
    */
   public CollectionConfigurator(ConfigurationSource source){
     this(source, new NoOpConfigurator());
-  }
-
-  @Override
-  public void configure(Object object) throws ConfigurationException {
-    requireNonNull(object, "null object");
-
-    Iterator<Field> iter = Stream.of(object.getClass().getDeclaredFields())
-            .filter(f -> f.isAnnotationPresent(CollectionConfiguration.class))
-            .map(f -> {f.setAccessible(true); return f;})
-            .iterator();
-
-    while(iter.hasNext()){
-      Field field = iter.next();
-      final String propertyName = fieldNameFunction.apply(field);
-
-      if(source.configurations().containsKey(propertyName)){
-        CollectionConfigurationConverter converter = fieldConverterFunction.apply(field);
-
-        try{
-          field.set(object, converter.convert(source.configurations().get(propertyName)));
-        }catch(IllegalArgumentException | IllegalAccessException e){
-          throw new ConfigurationException(
-                  String.format(
-                          "Unable to configure field '%s' of type '%s' in object of class '%s'",
-                          field.getName(), 
-                          field.getType().getName(), 
-                          field.getDeclaringClass().getName()
-                  ), 
-                  e
-          );
-        }
-      }
-    }
-
-    configurator.configure(object);
   }
 }

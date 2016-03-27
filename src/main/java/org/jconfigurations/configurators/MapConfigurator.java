@@ -16,10 +16,6 @@
 package org.jconfigurations.configurators;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import static java.util.Objects.requireNonNull;
-import java.util.stream.Stream;
-import org.jconfigurations.ConfigurationException;
 import org.jconfigurations.MapConfiguration;
 import org.jconfigurations.Name;
 import org.jconfigurations.converters.ConfigurationConverter;
@@ -41,12 +37,7 @@ import org.jconfigurations.util.ErrorFunction;
  *
  * @author George Aristy
  */
-public class MapConfigurator implements Configurator {
-  private final ConfigurationSource source;
-  private final Configurator configurator;
-  private final ErrorFunction<Field, String> fieldNameFunction;
-  private final ErrorFunction<Field, MapConfigurationConverter> fieldConverterFunction;
-
+public class MapConfigurator extends BaseConfigurator {
   /**
    * Fully customizable constructor that allows the user to chain link another 
    * {@link Configurator configurator} in order to compose a multi-featured chain.
@@ -66,10 +57,7 @@ public class MapConfigurator implements Configurator {
           ErrorFunction<Field, String> fieldNameFunction, 
           ErrorFunction<Field, MapConfigurationConverter> fieldConverterFunction
   ) {
-    this.source = requireNonNull(source, "null source");
-    this.configurator = requireNonNull(configurator, "null configurator");
-    this.fieldNameFunction = requireNonNull(fieldNameFunction, "null fieldNameFunction");
-    this.fieldConverterFunction = requireNonNull(fieldConverterFunction, "null fieldConverterFunction");
+    super(MapConfiguration.class, source, configurator, fieldNameFunction, fieldConverterFunction);
   }
 
   /**
@@ -116,40 +104,5 @@ public class MapConfigurator implements Configurator {
    */
   public MapConfigurator(ConfigurationSource source){
     this(source, new NoOpConfigurator());
-  }
-
-  @Override
-  public void configure(Object object) throws ConfigurationException {
-    requireNonNull(object, "null object");
-
-    Iterator<Field> iter = Stream.of(object.getClass().getDeclaredFields())
-            .filter(f -> f.isAnnotationPresent(MapConfiguration.class))
-            .map(f -> {f.setAccessible(true); return f;})
-            .iterator();
-
-    while(iter.hasNext()){
-      Field field = iter.next();
-      final String propertyName = fieldNameFunction.apply(field);
-
-      if(source.configurations().containsKey(propertyName)){
-        MapConfigurationConverter converter = fieldConverterFunction.apply(field);
-
-        try{
-          field.set(object, converter.convert(source.configurations().get(propertyName)));
-        }catch(IllegalArgumentException | IllegalAccessException e){
-          throw new ConfigurationException(
-                  String.format(
-                          "Unable to configure field '%s' of type '%s' in object of class '%s'",
-                          field.getName(), 
-                          field.getType().getName(), 
-                          field.getDeclaringClass().getName()
-                  ), 
-                  e
-          );
-        }
-      }
-    }
-
-    configurator.configure(object);
   }
 }
