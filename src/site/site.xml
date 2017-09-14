@@ -33,7 +33,7 @@ limitations under the License.
       <brand>
         <name>
           <![CDATA[
-          <img src="images/puzzle_16.png"/> jconfigurations
+            <img src="images/puzzle_16.png"/> jconfigurations
           ]]>
         </name>
         <href>./index.html</href>
@@ -44,13 +44,11 @@ limitations under the License.
       </bottomNav>
       <pages>
         <index>
-          <!--<toc>sidebar</toc>-->
           <sections>
             <body />
           </sections>
         </index>
         <usage>
-          <!--<toc>sidebar</toc>-->
           <sections>
             <body />
           </sections>
@@ -72,7 +70,7 @@ limitations under the License.
 
     <menu name="Project">
       <item name="Releases" href="https://github.com/llorllale/jconfigurations/releases"/>
-      <item name="Issue Tracking" href="./issue-tracking.html"/>
+      <item name="Issue Tracking" href="https://github.com/llorllale/jconfigurations/issues"/>
       <item name="License" href="./license.html"/>
       <item name="Members" href="./team-list.html"/>
     </menu>

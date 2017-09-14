@@ -1,0 +1,21 @@
+sudo: false
+language: java
+services:
+- docker
+cache:
+  directories:
+  - $HOME/.cache
+  - $HOME/.m2
+dist: trusty
+jdk:
+  - openjdk8
+
+script: 
+  - mvn -P release-profile clean install
+
+deploy:
+  provider: script
+  script: "mvn --settings settings.xml site-deploy"
+  skip_cleanup: true
+  on:
+    tags: true

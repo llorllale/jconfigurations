@@ -45,10 +45,6 @@
   </issueManagement>
 
   <distributionManagement>
-    <snapshotRepository>
-      <id>ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
     <repository>
       <id>ossrh</id>
       <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
@@ -139,7 +135,6 @@
   </profiles>
 
   <reporting>
-    <outputDirectory>${basedir}/docs</outputDirectory>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -149,7 +144,6 @@
           <reportSet>
             <reports>
               <report>index</report>
-              <report>issue-tracking</report>
               <report>license</report>
               <report>project-team</report>
             </reports>
@@ -189,6 +183,24 @@
             <version>1.7</version>
           </dependency>
         </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.9</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>site-deploy</phase>
+            <configuration>
+              <server>github</server>
+              <message>Site for ${project.artifactId}-${project.version}.</message>
+              <merge>false</merge>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
