@@ -8,8 +8,8 @@
   <packaging>jar</packaging>
 
   <name>${project.groupId}:${project.artifactId}</name>
-  <description>Heavily inspired by jcommander (https://github.com/cbeust/jcommander), but more API-oriented instead of command-line-oriented.</description>
-  <url>https://github.com/llorllale/jconfigurations</url>
+  <description>Simple and intuitive injection of configurations into object attributes.</description>
+  <url>https://llorllale.github.io/jconfigurations</url>
 
   <developers>
     <developer>
@@ -20,10 +20,15 @@
     </developer>
   </developers>
 
+  <organization>
+    <name>George Aristy</name>
+    <url>https://llorllale.github.io/</url>
+  </organization>
+
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>LICENSE</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -31,8 +36,13 @@
   <scm>
     <connection>scm:git:git@github.com:llorllale/jconfigurations.git</connection>
     <developerConnection>scm:git:git@github.com:llorllale/jconfigurations.git</developerConnection>
-    <url>git@github.com:llorllale/jconfigurations.git</url>
+    <url>https://github.com/llorllale/jconfigurations</url>
   </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/llorllale/jconfigurations/issues</url>
+  </issueManagement>
 
   <distributionManagement>
     <snapshotRepository>
@@ -128,4 +138,58 @@
     </profile>
   </profiles>
 
+  <reporting>
+    <outputDirectory>${basedir}/docs</outputDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.6</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>project-team</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.4</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>javadoc</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.3</version>
+        <dependencies>
+          <dependency>
+            <groupId>lt.velykis.maven.skins</groupId>
+            <artifactId>reflow-velocity-tools</artifactId>
+            <version>1.1.1</version>
+          </dependency>
+          <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+    </plugins>
+  </build>
 </project>
