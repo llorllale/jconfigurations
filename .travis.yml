@@ -15,8 +15,8 @@ script:
 
 # https://docs.travis-ci.com/user/deployment/pages/
 deploy:
-  provider: pages
+  provider: script
   skip_cleanup: true
-  github_token: $site-token
+  script: "mvn --settings settings.xml site-deploy"
   on:
     tags: true
