@@ -1,0 +1,25 @@
+#set($h1 = '#')
+#set($h2 = '##')
+#set($h3 = '###')
+#set($h4 = '####')
+#set($h5 = '#####')
+#set($h6 = '######')
+
+$h3 About
+Inspired by [jcommander](https://github.com/cbeust/jcommander), this library provides simple and intuitive *injection* of configurations into object attributes of your choosing. It is intended for use in non-managed environments or projects where [JSR 299: Contexts and Dependency Injection for the JavaTM EE platform](https://jcp.org/en/jsr/detail?id=299) would be overkill.
+
+`jconfigurations` consists of a single lightweight jar with no dependencies. Unlike `jcommander`, it does not parse command-line arguments, and is geared towards configurations you might keep in a properties file or similar.
+
+$h3 Include in maven projects
+
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>${project.artifactId}</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+View the [usage](./usage.html) and the [javadoc](./apidocs/index.html) resources for additional details.
+
+For bugs or enhancements, please use our [issue tracker](https://github.com/llorllale/jconfigurations/issues).
+ 
+Icon made by [EpiCoders](https://www.flaticon.com/authors/epiccoders) from [www.flaticon.com](https://www.flaticon.com).

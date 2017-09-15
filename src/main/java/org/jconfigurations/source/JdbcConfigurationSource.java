@@ -59,7 +59,7 @@ public class JdbcConfigurationSource implements ConfigurationSource {
   }
 
   /**
-   * Same as calling {@link new JdbcConfigurationSource(conn.prepareStatement(sql))}.
+   * Same as calling {@code new JdbcConfigurationSource(conn.prepareStatement(sql))}.
    * @param conn a {@link Connection jdbc connection}
    * @param sql an SQL statement that requires no parameters to be bound and can be executed as-is
    * @throws SQLException if a JDBC error occurs
