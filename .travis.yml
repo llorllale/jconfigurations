@@ -20,3 +20,4 @@ deploy:
   github_token: $site-token
   on:
     tags: true
+
