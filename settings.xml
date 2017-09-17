@@ -4,6 +4,7 @@
   <servers>
     <server>
       <id>github-pages</id>
+      <username></username>
       <password>${env.site-token}</password>
     </server>
     <server>

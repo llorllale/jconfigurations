@@ -202,6 +202,9 @@
             <configuration>
               <message>Site for ${project.artifactId}-${project.version}.</message>
               <merge>false</merge>
+              <server>github-pages</server>
+              <repositoryOwner>llorllale</repositoryOwner>
+              <repositoryName>jconfigurations</repositoryName>
             </configuration>
           </execution>
         </executions>
