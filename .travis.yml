@@ -13,7 +13,6 @@ jdk:
 script: 
   - mvn -P release-profile clean install
 
-# https://docs.travis-ci.com/user/deployment/pages/
 deploy:
   provider: script
   skip_cleanup: true
