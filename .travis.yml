@@ -16,6 +16,6 @@ script:
 deploy:
   provider: script
   skip_cleanup: true
-  script: "mvn --settings settings.xml site-deploy"
+  script: "mvn site-deploy -X"
   on:
     tags: true
