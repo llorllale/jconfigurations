@@ -71,8 +71,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <netbeans.hint.license>apache20</netbeans.hint.license>
-    <github.global.server>github-pages</github.global.server>
-    <github.global.oauth2Token>${env.site-token}</github.global.oauth2Token>
   </properties>
 
   <profiles>
@@ -188,26 +186,6 @@
             <version>1.7</version>
           </dependency>
         </dependencies>
-      </plugin>
-      <plugin>
-        <groupId>com.github.github</groupId>
-        <artifactId>site-maven-plugin</artifactId>
-        <version>0.12</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <phase>site-deploy</phase>
-            <configuration>
-              <message>Site for ${project.artifactId}-${project.version}.</message>
-              <merge>false</merge>
-              <server>github-pages</server>
-              <repositoryOwner>llorllale</repositoryOwner>
-              <repositoryName>jconfigurations</repositoryName>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>

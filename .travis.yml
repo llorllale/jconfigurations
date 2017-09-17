@@ -12,10 +12,12 @@ jdk:
 
 script: 
   - mvn -P release-profile clean install
+  - mvn site
 
 deploy:
-  provider: script
+  provider: pages
   skip_cleanup: true
-  script: "mvn --settings settings.xml site-deploy -X"
+  local_dir: target/site/
+  github_token: $site-token
   on:
     tags: true
