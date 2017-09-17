@@ -5,12 +5,7 @@
     <server>
       <id>github-pages</id>
       <username></username>
-      <password>${env.site-token}</password>
-    </server>
-    <server>
-      <id>ossrh</id>
-      <username>${env.nexus-user}</username>
-      <password>${env.nexus-pwd}</password>
+      <password>${env.site_token}</password>
     </server>
   </servers>
 </settings>
