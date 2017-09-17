@@ -18,6 +18,6 @@ deploy:
   provider: pages
   skip_cleanup: true
   local_dir: target/site/
-  github_token: $site-token
+  github_token: $site_token
   on:
     tags: true
