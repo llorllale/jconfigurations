@@ -15,8 +15,9 @@ script:
   - mvn site
 
 deploy:
-  provider: script
+  provider: pages
   skip_cleanup: true
-  script: "mvn --settings settings.xml site-deploy"
+  local_dir: target/site/
+  github_token: $site_token
   on:
     tags: true

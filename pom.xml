@@ -187,24 +187,6 @@
           </dependency>
         </dependencies>
       </plugin>
-      <plugin>
-        <groupId>com.github.github</groupId>
-        <artifactId>site-maven-plugin</artifactId>
-        <version>0.12</version>
-        <configuration>
-          <server>github-pages</server>
-          <message>Publish site for ${project.artifactId}-${project.version}</message>
-          <merge>false</merge>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>site</goal>
-            </goals>
-            <phase>site-deploy</phase>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>
