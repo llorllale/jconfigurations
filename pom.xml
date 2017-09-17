@@ -71,7 +71,6 @@
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <netbeans.hint.license>apache20</netbeans.hint.license>
-    <github.global.server>github</github.global.server>
     <github.global.oauth2Token>${env.site-token}</github.global.oauth2Token>
   </properties>
 
